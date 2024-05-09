@@ -1,13 +1,48 @@
 import React from "react";
 import styled from "styled-components";
+import { ModalButtonSize, ModalButtonTheme, ModalButtonWidth } from "../types/modal";
 
-type ButtonTheme = "dark" | "white";
+type ButtonWidthProps = ModalButtonWidth | "fixed";
 
 export interface ButtonProps extends React.PropsWithChildren<React.HTMLAttributes<HTMLButtonElement>> {
-  theme?: ButtonTheme;
+  theme?: ModalButtonTheme;
+  size?: ModalButtonSize;
+  width?: ButtonWidthProps;
 }
 
-const BUTTON_STYLES: Record<ButtonTheme, string> = {
+const BUTTON_SIZE_STYLES: Record<ModalButtonSize, string> = {
+  small: `
+    height: 24px;
+    line-height: 16px;
+    font-size: 12px;
+  `,
+  medium: `
+    height: 36px;
+    line-height: 18px;
+    font-size: 14px;
+  `,
+  large: `
+    height: 44px;
+    line-height: 22px;
+    font-size: 18px;
+  `,
+  xLarge: `
+    height: 56px;
+    line-height: 28px;
+    font-size: 24px;
+  `,
+};
+
+const BUTTON_WIDTH_STYLES: Record<ModalButtonWidth | ModalButtonSize, string> = {
+  small: "60px",
+  medium: "80px",
+  large: "120px",
+  xLarge: "160px",
+  full: "100%",
+  fit: "fit-content",
+};
+
+const BUTTON_THEME_STYLES: Record<ModalButtonTheme, string> = {
   dark: `
     background-color: #333333; 
 
@@ -30,9 +65,9 @@ const BUTTON_STYLES: Record<ButtonTheme, string> = {
     `,
 };
 
-const ModalButton = ({ children, onClick, theme = "white", ...props }: ButtonProps) => {
+const ModalButton = ({ children, onClick, theme = "white", size = "medium", width = "full", ...props }: ButtonProps) => {
   return (
-    <StyledButton $theme={theme} onClick={onClick} {...props}>
+    <StyledButton $theme={theme} $size={size} $width={width} onClick={onClick} {...props}>
       {children}
     </StyledButton>
   );
@@ -40,10 +75,7 @@ const ModalButton = ({ children, onClick, theme = "white", ...props }: ButtonPro
 
 export default ModalButton;
 
-const StyledButton = styled.button<{ $theme: ButtonTheme }>`
-  height: 44px;
-  width: 100%;
-
+const StyledButton = styled.button<{ $theme: ModalButtonTheme; $size: ModalButtonSize; $width: ButtonWidthProps }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,7 +83,9 @@ const StyledButton = styled.button<{ $theme: ButtonTheme }>`
   border: 0.5px solid #8b95a1;
   border-radius: 8px;
 
-  ${({ $theme }) => BUTTON_STYLES[$theme]}
-  font-size: 15px;
   font-weight: 700;
+
+  ${({ $size }) => BUTTON_SIZE_STYLES[$size]};
+  ${({ $theme }) => BUTTON_THEME_STYLES[$theme]};
+  width: ${({ $width, $size }) => ($width === "fixed" ? BUTTON_WIDTH_STYLES[$size] : BUTTON_WIDTH_STYLES[$width])};
 `;

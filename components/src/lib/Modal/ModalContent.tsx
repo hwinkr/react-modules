@@ -1,46 +1,50 @@
 import styled from "styled-components";
-
-type ContainerPositionType = "top" | "bottom" | "center";
+import { ModalPosition, ModalSize } from "../types/modal";
 
 export interface ModalContentProps extends React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
-  position?: ContainerPositionType;
+  position?: ModalPosition;
+  size?: ModalSize;
 }
 
-const ModalContent = ({ position = "center", children }: ModalContentProps) => {
-  return <StyledContent $position={position}>{children}</StyledContent>;
+const ModalContent = ({ children, position = "center", size = "medium" }: ModalContentProps) => {
+  return (
+    <StyledContent $position={position} $size={size}>
+      {children}
+    </StyledContent>
+  );
 };
 
 export default ModalContent;
 
-const POSITION_STYLES = {
-  top: `
-    top: 0;
-    width: 100%;
-    
+const MODAL_POSITION_STYLES: Record<ModalPosition, string> = {
+  top: `    
     border-radius: 0px 0px 10px 10px;
     `,
   center: `
-    width: 100%;
-    max-width: 640px;
-    
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    
     border-radius: 8px;
     `,
   bottom: `
-    top: 100%;
-    transform: translateY(-100%);
-
-    width: 100%;
-  
     border-radius: 10px 10px 0px 0px;
     `,
 };
 
-const StyledContent = styled.div<{ $position: ContainerPositionType }>`
-  position: absolute;
+const MODAL_SIZE_STYLES: Record<ModalSize, string> = {
+  full: `
+    
+  `,
+  large: `
+    max-width: 600px;
+  `,
+  medium: `
+    max-width: 480px;
+  `,
+  small: `
+    max-width: 320px;
+  `,
+};
+
+const StyledContent = styled.div<{ $position: ModalPosition; $size: ModalSize }>`
+  width: 100%;
 
   padding: 32px 24px;
   display: flex;
@@ -50,5 +54,8 @@ const StyledContent = styled.div<{ $position: ContainerPositionType }>`
   box-sizing: border-box;
 
   background-color: #ffffff;
-  ${({ $position }) => POSITION_STYLES[$position]};
+  ${({ $position }) => MODAL_POSITION_STYLES[$position]};
+  ${({ $size }) => MODAL_SIZE_STYLES[$size]};
+
+  z-index: 1;
 `;
